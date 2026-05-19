@@ -1,4 +1,4 @@
-﻿using VehicleParts.Application.DTOs;
+using VehicleParts.Application.DTOs;
 using VehicleParts.Application.Interfaces;
 using VehicleParts.Domain.Entities;
 using VehicleParts.Domain.Enums;
@@ -108,7 +108,7 @@ public class SaleInvoiceService : ISaleInvoiceService
         return MapToDto(invoice);
     }
 
-    public async Task<IEnumerable<SaleInvoiceDto>> GetByCustomerIdAsync(int customerId)
+    public async Task<IEnumerable<SaleInvoiceDto>> GetByCustomerIdAsync(string customerId)
     {
         var invoices = await _invoiceRepo.GetByCustomerIdAsync(customerId);
         return invoices.Select(MapToDto);

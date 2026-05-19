@@ -16,6 +16,18 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<PurchaseInvoiceItem> PurchaseInvoiceItems { get; set; }
     public DbSet<SalesOrder> SalesOrders => Set<SalesOrder>();
     public DbSet<SalesOrderItem> SalesOrderItems => Set<SalesOrderItem>();
+    public DbSet<CustomerVehicle> CustomerVehicles { get; set; }
+    public DbSet<Vehicle> Vehicles { get; set; }
+    public DbSet<UnavailablePartRequest> UnavailablePartRequests { get; set; }
+    public DbSet<Review> Reviews { get; set; }
+    public DbSet<SalesInvoice> SalesInvoices { get; set; }
+    public DbSet<SalesInvoiceItem> SalesInvoiceItems { get; set; }
+    public DbSet<Appointment> Appointments { get; set; }
+    public DbSet<ServiceHistory> ServiceHistories { get; set; }
+    public DbSet<CustomerPurchase> CustomerPurchases { get; set; }
+    public DbSet<CustomerPurchaseItem> CustomerPurchaseItems { get; set; }
+    public DbSet<SaleInvoice> SaleInvoices { get; set; }
+    public DbSet<SaleInvoiceItem> SaleInvoiceItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

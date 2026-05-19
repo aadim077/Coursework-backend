@@ -5,7 +5,7 @@
 namespace VehicleParts.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddFinancialReportSales : Migration
+    public partial class FixModel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

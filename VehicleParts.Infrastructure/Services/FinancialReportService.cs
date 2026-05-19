@@ -18,61 +18,55 @@ public class FinancialReportService : IFinancialReportService
     {
         var targetDate = date.Date;
 
-        var sales = await _context.SalesInvoices
-            .Where(s => s.InvoiceDate.Date == targetDate)
-            .ToListAsync();
+        var salesQuery = _context.SalesInvoices
+            .Where(s => s.InvoiceDate.Date == targetDate);
 
-        var purchases = await _context.PurchaseInvoices
-            .Where(p => p.InvoiceDate.Date == targetDate)
-            .ToListAsync();
+        var purchasesQuery = _context.PurchaseInvoices
+            .Where(p => p.InvoiceDate.Date == targetDate);
 
         return new FinancialReportDto
         {
             ReportDate = targetDate,
-            TotalIncome = sales.Sum(s => s.TotalAmount),
-            TotalExpense = purchases.Sum(p => p.TotalAmount),
-            NumberOfSales = sales.Count,
-            NumberOfPurchases = purchases.Count
+            TotalIncome = await salesQuery.SumAsync(s => s.TotalAmount),
+            TotalExpense = await purchasesQuery.SumAsync(p => p.TotalAmount),
+            NumberOfSales = await salesQuery.CountAsync(),
+            NumberOfPurchases = await purchasesQuery.CountAsync()
         };
     }
 
     public async Task<FinancialReportDto> GetMonthlyReportAsync(int year, int month)
     {
-        var sales = await _context.SalesInvoices
-            .Where(s => s.InvoiceDate.Year == year && s.InvoiceDate.Month == month)
-            .ToListAsync();
+        var salesQuery = _context.SalesInvoices
+            .Where(s => s.InvoiceDate.Year == year && s.InvoiceDate.Month == month);
 
-        var purchases = await _context.PurchaseInvoices
-            .Where(p => p.InvoiceDate.Year == year && p.InvoiceDate.Month == month)
-            .ToListAsync();
+        var purchasesQuery = _context.PurchaseInvoices
+            .Where(p => p.InvoiceDate.Year == year && p.InvoiceDate.Month == month);
 
         return new FinancialReportDto
         {
             ReportDate = new DateTime(year, month, 1),
-            TotalIncome = sales.Sum(s => s.TotalAmount),
-            TotalExpense = purchases.Sum(p => p.TotalAmount),
-            NumberOfSales = sales.Count,
-            NumberOfPurchases = purchases.Count
+            TotalIncome = await salesQuery.SumAsync(s => s.TotalAmount),
+            TotalExpense = await purchasesQuery.SumAsync(p => p.TotalAmount),
+            NumberOfSales = await salesQuery.CountAsync(),
+            NumberOfPurchases = await purchasesQuery.CountAsync()
         };
     }
 
     public async Task<FinancialReportDto> GetYearlyReportAsync(int year)
     {
-        var sales = await _context.SalesInvoices
-            .Where(s => s.InvoiceDate.Year == year)
-            .ToListAsync();
+        var salesQuery = _context.SalesInvoices
+            .Where(s => s.InvoiceDate.Year == year);
 
-        var purchases = await _context.PurchaseInvoices
-            .Where(p => p.InvoiceDate.Year == year)
-            .ToListAsync();
+        var purchasesQuery = _context.PurchaseInvoices
+            .Where(p => p.InvoiceDate.Year == year);
 
         return new FinancialReportDto
         {
             ReportDate = new DateTime(year, 1, 1),
-            TotalIncome = sales.Sum(s => s.TotalAmount),
-            TotalExpense = purchases.Sum(p => p.TotalAmount),
-            NumberOfSales = sales.Count,
-            NumberOfPurchases = purchases.Count
+            TotalIncome = await salesQuery.SumAsync(s => s.TotalAmount),
+            TotalExpense = await purchasesQuery.SumAsync(p => p.TotalAmount),
+            NumberOfSales = await salesQuery.CountAsync(),
+            NumberOfPurchases = await purchasesQuery.CountAsync()
         };
     }
 }

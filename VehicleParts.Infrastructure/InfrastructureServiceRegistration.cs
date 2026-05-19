@@ -7,8 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using VehicleParts.Application.Interfaces;
+using VehicleParts.Application.Services;
 using VehicleParts.Domain.Entities;
 using VehicleParts.Infrastructure.Data;
+using VehicleParts.Infrastructure.Repositories;
 using VehicleParts.Infrastructure.Services;
 using VehicleParts.Infrastructure.Settings;
 
@@ -23,21 +25,19 @@ public static class InfrastructureServiceRegistration
         configuration.GetSection("JwtSettings").Bind(jwtSettings);
         services.AddSingleton(jwtSettings);
 
+        // Email Settings
+        var emailSettings = new EmailSettings();
+        configuration.GetSection("EmailSettings").Bind(emailSettings);
+        services.AddSingleton(emailSettings);
+
         // Database - Use SQLite for development if PostgreSQL is unavailable
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         services.AddDbContext<AppDbContext>(options =>
         {
-            if (environment == "Development" && (connectionString?.Contains("localhost") ?? false))
-            {
-                // Try SQLite first in development for easier local testing
-                options.UseSqlite("Data Source=coursework.db");
-            }
-            else
-            {
-                options.UseNpgsql(connectionString);
-            }
+            options.UseNpgsql(connectionString);
+            options.ConfigureWarnings(warnings => warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         });
 
         // Identity
@@ -76,6 +76,8 @@ public static class InfrastructureServiceRegistration
         // Authorization policies
         services.AddAuthorizationBuilder()
             .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
+            .AddPolicy("StaffOnly", policy => policy.RequireRole("Staff"))
+            .AddPolicy("CustomerOnly", policy => policy.RequireRole("Customer"))
             .AddPolicy("StaffOrAdmin", policy => policy.RequireRole("Staff", "Admin"))
             .AddPolicy("AnyRole", policy => policy.RequireRole("Admin", "Staff", "Customer"));
 
@@ -85,6 +87,19 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IPartService, PartService>();
         services.AddScoped<IPurchaseInvoiceService, PurchaseInvoiceService>();
         services.AddScoped<ISalesOrderService, SalesOrderService>();
+        services.AddScoped<IStaffService, StaffService>();
+        services.AddScoped<IVendorService, VendorService>();
+        services.AddScoped<IFinancialReportService, FinancialReportService>();
+        services.AddScoped<ICustomerProfileService, CustomerProfileService>();
+        services.AddScoped<ICustomerVehicleService, CustomerVehicleService>();
+        services.AddScoped<IPartRepository, PartRepository>();
+        services.AddScoped<ISaleInvoiceRepository, SaleInvoiceRepository>();
+        services.AddScoped<ISaleInvoiceService, SaleInvoiceService>();
+        services.AddScoped<IAppointmentService, AppointmentService>();
+        services.AddScoped<IUnavailablePartRequestService, UnavailablePartRequestService>();
+        services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<ICustomerHistoryService, CustomerHistoryService>();
+        services.AddScoped<IEmailService, EmailService>();
         return services;
     }
 }

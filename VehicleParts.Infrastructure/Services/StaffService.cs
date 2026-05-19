@@ -28,7 +28,9 @@ internal sealed class StaffService : IStaffService
         var staffUsers = await _userManager.GetUsersInRoleAsync(UserRoles.Staff);
 
         var allStaff = adminUsers
-            .Union(staffUsers, new AppUserComparer())
+            .Concat(staffUsers)
+            .GroupBy(u => u.Id)
+            .Select(g => g.First())
             .OrderByDescending(u => u.CreatedAt)
             .ToList();
 
@@ -221,12 +223,5 @@ internal sealed class StaffService : IStaffService
             CreatedAt = user.CreatedAt,
             UpdatedAt = user.UpdatedAt
         };
-    }
-
-
-    private sealed class AppUserComparer : IEqualityComparer<AppUser>
-    {
-        public bool Equals(AppUser? x, AppUser? y) => x?.Id == y?.Id;
-        public int GetHashCode(AppUser obj) => obj.Id.GetHashCode();
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using VehicleParts.Application.DTOs;
 using VehicleParts.Application.Interfaces;
 
@@ -38,8 +38,8 @@ public class SaleInvoicesController : ControllerBase
         catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
     }
 
-    [HttpGet("customer/{customerId:int}")]
-    public async Task<IActionResult> GetByCustomer(int customerId)
+    [HttpGet("customer/{customerId}")]
+    public async Task<IActionResult> GetByCustomer(string customerId)
     {
         return Ok(await _service.GetByCustomerIdAsync(customerId));
     }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using VehicleParts.Application.Interfaces;
 using VehicleParts.Domain.Entities;
 using VehicleParts.Infrastructure.Data;
@@ -24,7 +24,7 @@ public class SaleInvoiceRepository : RepositoryBase<SaleInvoice>, ISaleInvoiceRe
             .FirstOrDefaultAsync(i => i.Id == invoiceId);
     }
 
-    public async Task<IEnumerable<SaleInvoice>> GetByCustomerIdAsync(int customerId)
+    public async Task<IEnumerable<SaleInvoice>> GetByCustomerIdAsync(string customerId)
     {
         return await _context.SaleInvoices
             .Include(i => i.Items)

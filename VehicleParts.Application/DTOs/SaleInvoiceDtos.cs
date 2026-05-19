@@ -1,4 +1,4 @@
-﻿using VehicleParts.Domain.Enums;
+using VehicleParts.Domain.Enums;
 
 namespace VehicleParts.Application.DTOs;
 
@@ -6,8 +6,8 @@ namespace VehicleParts.Application.DTOs;
 
 public class CreateSaleInvoiceDto
 {
-    public int CustomerId { get; set; }
-    public int StaffId { get; set; }
+    public string CustomerId { get; set; } = string.Empty;
+    public string StaffId { get; set; } = string.Empty;
     public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
     public string? Notes { get; set; }
     public List<CreateSaleItemDto> Items { get; set; } = new();
@@ -26,9 +26,9 @@ public class SaleInvoiceDto
     public int SaleInvoiceId { get; set; }
     public string InvoiceNumber { get; set; } = string.Empty;
     public DateTime InvoiceDate { get; set; }
-    public int CustomerId { get; set; }
+    public string CustomerId { get; set; } = string.Empty;
     public string CustomerName { get; set; } = string.Empty;
-    public int StaffId { get; set; }
+    public string StaffId { get; set; } = string.Empty;
     public string StaffName { get; set; } = string.Empty;
     public string PaymentMethod { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;

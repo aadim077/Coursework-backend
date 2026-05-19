@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using VehicleParts.Domain.Enums;
 
@@ -15,11 +15,11 @@ public class SaleInvoice : BaseEntity
 
     // The customer who bought (AppUser with role Customer)
     [Required]
-    public int CustomerId { get; set; }
+    public string CustomerId { get; set; } = string.Empty;
 
     // The staff who processed the sale (AppUser with role Staff)
     [Required]
-    public int StaffId { get; set; }
+    public string StaffId { get; set; } = string.Empty;
 
     public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
     public InvoiceStatus Status { get; set; } = InvoiceStatus.Paid;
