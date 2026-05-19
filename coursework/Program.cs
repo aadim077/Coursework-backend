@@ -1,43 +1,50 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using VehicleParts.Application.Interfaces;
-using VehicleParts.Application.Services;
+using VehicleParts.Infrastructure;
 using VehicleParts.Infrastructure.Data;
-using VehicleParts.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddControllers();
 
-// Configure Entity Framework and PostgreSQL
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Add Infrastructure services (EF Core, Identity, JWT, Authorization)
+builder.Services.AddInfrastructure(builder.Configuration);
 
-// Configure ASP.NET Core Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
-
-
-
-
+// Swagger/OpenAPI configuration
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-builder.Services.AddScoped<ISaleInvoiceRepository, SaleInvoiceRepository>();
-builder.Services.AddScoped<IPartRepository, PartRepository>();
-
-builder.Services.AddScoped<ISaleInvoiceService, SaleInvoiceService>();
+// CORS for development
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevPolicy", builder =>
+    {
+        builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
+// Add the global exception handler as the very first middleware
+app.UseMiddleware<coursework.Middlewares.GlobalExceptionMiddleware>();
+
+// Database migration and role seeding
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<Microsoft.AspNetCore.Identity.IdentityRole>>();
+    await RoleSeeder.SeedRolesAsync(roleManager);
+}
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("DevPolicy");
 }
 
 app.UseHttpsRedirection();
@@ -48,3 +55,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
