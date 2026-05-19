@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using VehicleParts.Application.Interfaces;
 using VehicleParts.Domain.Entities;
+using VehicleParts.Infrastructure.BackgroundJobs;
 using VehicleParts.Infrastructure.Data;
 using VehicleParts.Infrastructure.Services;
 using VehicleParts.Infrastructure.Settings;
@@ -21,6 +22,10 @@ public static class InfrastructureServiceRegistration
         var jwtSettings = new JwtSettings();
         configuration.GetSection("JwtSettings").Bind(jwtSettings);
         services.AddSingleton(jwtSettings);
+
+        var emailSettings = new EmailSettings();
+        configuration.GetSection("EmailSettings").Bind(emailSettings);
+        services.AddSingleton(emailSettings);
 
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
@@ -65,7 +70,9 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IFinancialReportService, FinancialReportService>();
         services.AddScoped<IStaffService, StaffService>();
-        services.AddScoped<IVendorService, VendorService>();
+        services.AddScoped<IEmailService, EmailService>();
+
+        services.AddHostedService<DailyNotificationJob>();
 
         return services;
     }
