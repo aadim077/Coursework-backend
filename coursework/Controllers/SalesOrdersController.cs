@@ -32,7 +32,7 @@ public class SalesOrdersController : ControllerBase
 
         var result = await _salesOrderService.CreateAsync(dto, customerId);
         if (!result.IsSuccess)
-            return BadRequest(result.Error);
+            return BadRequest(result.Message);
 
         return CreatedAtAction(nameof(GetMyOrders), result.Data);
     }
