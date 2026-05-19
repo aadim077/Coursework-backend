@@ -22,6 +22,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<coursework.Middlewares.GlobalExceptionMiddleware>();

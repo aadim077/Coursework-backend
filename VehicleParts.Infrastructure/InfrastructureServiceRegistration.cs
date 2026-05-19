@@ -8,7 +8,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using VehicleParts.Application.Interfaces;
 using VehicleParts.Domain.Entities;
-using VehicleParts.Infrastructure.BackgroundJobs;
 using VehicleParts.Infrastructure.Data;
 using VehicleParts.Infrastructure.Services;
 using VehicleParts.Infrastructure.Settings;
@@ -19,17 +18,29 @@ public static class InfrastructureServiceRegistration
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        // JWT Settings
         var jwtSettings = new JwtSettings();
         configuration.GetSection("JwtSettings").Bind(jwtSettings);
         services.AddSingleton(jwtSettings);
 
-        var emailSettings = new EmailSettings();
-        configuration.GetSection("EmailSettings").Bind(emailSettings);
-        services.AddSingleton(emailSettings);
+        // Database - Use SQLite for development if PostgreSQL is unavailable
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+        {
+            if (environment == "Development" && (connectionString?.Contains("localhost") ?? false))
+            {
+                // Try SQLite first in development for easier local testing
+                options.UseSqlite("Data Source=coursework.db");
+            }
+            else
+            {
+                options.UseNpgsql(connectionString);
+            }
+        });
 
+        // Identity
         services.AddIdentity<AppUser, IdentityRole>(options =>
         {
             options.Password.RequireDigit = true;
@@ -41,6 +52,7 @@ public static class InfrastructureServiceRegistration
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
+        // JWT Authentication
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -61,19 +73,18 @@ public static class InfrastructureServiceRegistration
             };
         });
 
+        // Authorization policies
         services.AddAuthorizationBuilder()
             .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
             .AddPolicy("StaffOrAdmin", policy => policy.RequireRole("Staff", "Admin"))
             .AddPolicy("AnyRole", policy => policy.RequireRole("Admin", "Staff", "Customer"));
 
+        // Services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IFinancialReportService, FinancialReportService>();
-        services.AddScoped<IStaffService, StaffService>();
-        services.AddScoped<IEmailService, EmailService>();
-
-        services.AddHostedService<DailyNotificationJob>();
-
+        services.AddScoped<IPartService, PartService>();
+        services.AddScoped<IPurchaseInvoiceService, PurchaseInvoiceService>();
+        services.AddScoped<ISalesOrderService, SalesOrderService>();
         return services;
     }
 }
