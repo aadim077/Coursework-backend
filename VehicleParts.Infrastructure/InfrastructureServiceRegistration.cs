@@ -18,16 +18,13 @@ public static class InfrastructureServiceRegistration
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // JWT Settings
         var jwtSettings = new JwtSettings();
         configuration.GetSection("JwtSettings").Bind(jwtSettings);
         services.AddSingleton(jwtSettings);
 
-        // Database
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        // Identity
         services.AddIdentity<AppUser, IdentityRole>(options =>
         {
             options.Password.RequireDigit = true;
@@ -39,7 +36,6 @@ public static class InfrastructureServiceRegistration
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
-        // JWT Authentication
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -60,16 +56,16 @@ public static class InfrastructureServiceRegistration
             };
         });
 
-        // Authorization policies
         services.AddAuthorizationBuilder()
             .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
             .AddPolicy("StaffOrAdmin", policy => policy.RequireRole("Staff", "Admin"))
             .AddPolicy("AnyRole", policy => policy.RequireRole("Admin", "Staff", "Customer"));
 
-        // Services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IFinancialReportService, FinancialReportService>();
+        services.AddScoped<IStaffService, StaffService>();
+        services.AddScoped<IVendorService, VendorService>();
 
         return services;
     }
