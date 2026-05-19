@@ -15,17 +15,20 @@ public class CustomerController : ControllerBase
     private readonly IAppointmentService _appointmentService;
     private readonly IUnavailablePartRequestService _unavailablePartRequestService;
     private readonly IReviewService _reviewService;
+    private readonly ICustomerHistoryService _customerHistoryService;
 
     public CustomerController(
         ICustomerProfileService service,
         IAppointmentService appointmentService,
         IUnavailablePartRequestService unavailablePartRequestService,
-        IReviewService reviewService)
+        IReviewService reviewService,
+        ICustomerHistoryService customerHistoryService)
     {
         _service = service;
         _appointmentService = appointmentService;
         _unavailablePartRequestService = unavailablePartRequestService;
         _reviewService = reviewService;
+        _customerHistoryService = customerHistoryService;
     }
 
     private string? GetUserId()
@@ -39,9 +42,11 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _service.GetProfileAsync(userId);
         if (!result.IsSuccess)
             return NotFound(result.Message);
+
         return Ok(result.Data);
     }
 
@@ -51,9 +56,11 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _service.UpdateProfileAsync(userId, dto.FullName, dto.PhoneNumber);
         if (!result.IsSuccess)
             return BadRequest(result.Message);
+
         return Ok();
     }
 
@@ -63,6 +70,7 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _service.GetVehiclesAsync(userId);
         return Ok(result.Data);
     }
@@ -73,9 +81,11 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _service.GetVehicleByIdAsync(userId, id);
         if (!result.IsSuccess)
             return NotFound(result.Message);
+
         return Ok(result.Data);
     }
 
@@ -85,9 +95,11 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _service.CreateVehicleAsync(userId, dto);
         if (!result.IsSuccess)
             return BadRequest(result.Message);
+
         return Ok();
     }
 
@@ -97,9 +109,11 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _service.UpdateVehicleAsync(userId, id, dto);
         if (!result.IsSuccess)
             return BadRequest(result.Message);
+
         return Ok();
     }
 
@@ -109,9 +123,11 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _service.DeleteVehicleAsync(userId, id);
         if (!result.IsSuccess)
             return NotFound(result.Message);
+
         return NoContent();
     }
 
@@ -122,9 +138,11 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _appointmentService.BookAppointmentAsync(userId, dto);
         if (!result.IsSuccess)
             return BadRequest(result.Message);
+
         return Ok(result.Data);
     }
 
@@ -135,6 +153,7 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _appointmentService.GetAppointmentsAsync(userId);
         return Ok(result.Data);
     }
@@ -146,9 +165,11 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _unavailablePartRequestService.RequestUnavailablePartAsync(userId, dto);
         if (!result.IsSuccess)
             return BadRequest(result.Message);
+
         return Ok(result.Data);
     }
 
@@ -159,6 +180,7 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _unavailablePartRequestService.GetUnavailablePartRequestsAsync(userId);
         return Ok(result.Data);
     }
@@ -170,9 +192,11 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _reviewService.SubmitReviewAsync(userId, dto);
         if (!result.IsSuccess)
             return BadRequest(result.Message);
+
         return Ok(result.Data);
     }
 
@@ -183,7 +207,36 @@ public class CustomerController : ControllerBase
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
+
         var result = await _reviewService.GetReviewsAsync(userId);
+        return Ok(result.Data);
+    }
+
+    [HttpGet("service-history")]
+    public async Task<IActionResult> GetServiceHistory()
+    {
+        var userId = GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var result = await _customerHistoryService.GetServiceHistoryAsync(userId);
+        if (!result.IsSuccess)
+            return BadRequest(result.Message);
+
+        return Ok(result.Data);
+    }
+
+    [HttpGet("purchase-history")]
+    public async Task<IActionResult> GetPurchaseHistory()
+    {
+        var userId = GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var result = await _customerHistoryService.GetPurchaseHistoryAsync(userId);
+        if (!result.IsSuccess)
+            return BadRequest(result.Message);
+
         return Ok(result.Data);
     }
 }

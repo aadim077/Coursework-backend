@@ -79,6 +79,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IAppointmentService, AppointmentService>();
         services.AddScoped<IUnavailablePartRequestService, UnavailablePartRequestService>();
         services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<ICustomerHistoryService, CustomerHistoryService>();
 
         return services;
     }
