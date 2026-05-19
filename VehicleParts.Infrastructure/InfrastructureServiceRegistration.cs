@@ -82,7 +82,9 @@ public static class InfrastructureServiceRegistration
         // Services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
-
+        services.AddScoped<IPartService, PartService>();
+        services.AddScoped<IPurchaseInvoiceService, PurchaseInvoiceService>();
+        services.AddScoped<ISalesOrderService, SalesOrderService>();
         return services;
     }
 }
