@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VehicleParts.Infrastructure.Data;
@@ -11,9 +12,11 @@ using VehicleParts.Infrastructure.Data;
 namespace VehicleParts.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260518105115_AddCustomerAppointmentsRequestsReviews")]
+    partial class AddCustomerAppointmentsRequestsReviews
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -276,96 +279,6 @@ namespace VehicleParts.Infrastructure.Migrations
                     b.HasIndex("VehicleId");
 
                     b.ToTable("Appointments");
-                });
-
-            modelBuilder.Entity("VehicleParts.Domain.Entities.CustomerPurchase", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CustomerId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("PurchaseDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ReferenceNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("ReferenceNumber")
-                        .IsUnique();
-
-                    b.ToTable("CustomerPurchases");
-                });
-
-            modelBuilder.Entity("VehicleParts.Domain.Entities.CustomerPurchaseItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CustomerPurchaseId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ItemName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<decimal>("LineTotal")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<int?>("PartId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerPurchaseId");
-
-                    b.HasIndex("PartId");
-
-                    b.ToTable("CustomerPurchaseItems");
                 });
 
             modelBuilder.Entity("VehicleParts.Domain.Entities.CustomerVehicle", b =>
@@ -715,35 +628,6 @@ namespace VehicleParts.Infrastructure.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("VehicleParts.Domain.Entities.CustomerPurchase", b =>
-                {
-                    b.HasOne("VehicleParts.Domain.Entities.AppUser", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("VehicleParts.Domain.Entities.CustomerPurchaseItem", b =>
-                {
-                    b.HasOne("VehicleParts.Domain.Entities.CustomerPurchase", "CustomerPurchase")
-                        .WithMany("Items")
-                        .HasForeignKey("CustomerPurchaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("VehicleParts.Domain.Entities.Part", "Part")
-                        .WithMany()
-                        .HasForeignKey("PartId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("CustomerPurchase");
-
-                    b.Navigation("Part");
-                });
-
             modelBuilder.Entity("VehicleParts.Domain.Entities.CustomerVehicle", b =>
                 {
                     b.HasOne("VehicleParts.Domain.Entities.AppUser", "Customer")
@@ -816,11 +700,6 @@ namespace VehicleParts.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("VehicleParts.Domain.Entities.CustomerPurchase", b =>
-                {
-                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("VehicleParts.Domain.Entities.PurchaseInvoice", b =>

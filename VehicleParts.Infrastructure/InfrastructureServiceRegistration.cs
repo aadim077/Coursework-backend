@@ -23,21 +23,13 @@ public static class InfrastructureServiceRegistration
         configuration.GetSection("JwtSettings").Bind(jwtSettings);
         services.AddSingleton(jwtSettings);
 
-        // Database - Use SQLite for development if PostgreSQL is unavailable
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+        // Database - Always use PostgreSQL from configuration
         var connectionString = configuration.GetConnectionString("DefaultConnection");
-
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new InvalidOperationException("DefaultConnection string is missing or empty in configuration.");
         services.AddDbContext<AppDbContext>(options =>
         {
-            if (environment == "Development" && (connectionString?.Contains("localhost") ?? false))
-            {
-                // Try SQLite first in development for easier local testing
-                options.UseSqlite("Data Source=coursework.db");
-            }
-            else
-            {
-                options.UseNpgsql(connectionString);
-            }
+            options.UseNpgsql(connectionString);
         });
 
         // Identity
@@ -77,12 +69,17 @@ public static class InfrastructureServiceRegistration
         services.AddAuthorizationBuilder()
             .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
             .AddPolicy("StaffOrAdmin", policy => policy.RequireRole("Staff", "Admin"))
-            .AddPolicy("AnyRole", policy => policy.RequireRole("Admin", "Staff", "Customer"));
+            .AddPolicy("AnyRole", policy => policy.RequireRole("Admin", "Staff", "Customer"))
+            .AddPolicy("CustomerOnly", policy => policy.RequireRole("Customer"));
 
         // Services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<ICustomerVehicleService, CustomerVehicleService>();
+        services.AddScoped<ICustomerProfileService, CustomerProfileService>();
+        services.AddScoped<IAppointmentService, AppointmentService>();
+        services.AddScoped<IUnavailablePartRequestService, UnavailablePartRequestService>();
+        services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<ICustomerHistoryService, CustomerHistoryService>();
 
         return services;
     }
