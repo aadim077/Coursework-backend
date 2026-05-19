@@ -123,11 +123,11 @@ public class SaleInvoiceService : ISaleInvoiceService
         InvoiceDate = inv.InvoiceDate,
         CustomerId = inv.CustomerId,
         CustomerName = inv.Customer != null
-        ? $"{inv.Customer.FirstName} {inv.Customer.LastName}"
+        ? inv.Customer.FullName
         : string.Empty,
         StaffId = inv.StaffId,
         StaffName = inv.Staff != null
-        ? $"{inv.Staff.FirstName} {inv.Staff.LastName}"
+        ? inv.Staff.FullName
         : string.Empty,
         PaymentMethod = inv.PaymentMethod.ToString(),
         Status = inv.Status.ToString(),
