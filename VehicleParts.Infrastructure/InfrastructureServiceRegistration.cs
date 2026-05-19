@@ -23,14 +23,9 @@ public static class InfrastructureServiceRegistration
         configuration.GetSection("JwtSettings").Bind(jwtSettings);
         services.AddSingleton(jwtSettings);
 
-        // Database - Always use PostgreSQL from configuration
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new InvalidOperationException("DefaultConnection string is missing or empty in configuration.");
+        // Database
         services.AddDbContext<AppDbContext>(options =>
-        {
-            options.UseNpgsql(connectionString);
-        });
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         // Identity
         services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -69,17 +64,12 @@ public static class InfrastructureServiceRegistration
         services.AddAuthorizationBuilder()
             .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
             .AddPolicy("StaffOrAdmin", policy => policy.RequireRole("Staff", "Admin"))
-            .AddPolicy("AnyRole", policy => policy.RequireRole("Admin", "Staff", "Customer"))
-            .AddPolicy("CustomerOnly", policy => policy.RequireRole("Customer"));
+            .AddPolicy("AnyRole", policy => policy.RequireRole("Admin", "Staff", "Customer"));
 
         // Services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<ICustomerProfileService, CustomerProfileService>();
-        services.AddScoped<IAppointmentService, AppointmentService>();
-        services.AddScoped<IUnavailablePartRequestService, UnavailablePartRequestService>();
-        services.AddScoped<IReviewService, ReviewService>();
-        services.AddScoped<ICustomerHistoryService, CustomerHistoryService>();
+        services.AddScoped<IFinancialReportService, FinancialReportService>();
 
         return services;
     }
