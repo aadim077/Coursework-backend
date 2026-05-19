@@ -19,8 +19,6 @@ public class FinancialReportsController : ControllerBase
     [HttpGet("daily")]
     public async Task<IActionResult> GetDailyReport([FromQuery] DateTime date)
     {
-        // If no date is provided, it defaults to DateTime.MinValue. 
-        // We can default to today if it's the minimum value
         if (date == default)
         {
             date = DateTime.UtcNow;

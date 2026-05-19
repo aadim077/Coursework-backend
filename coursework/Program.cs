@@ -6,14 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Add Infrastructure services (EF Core, Identity, JWT, Authorization)
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Swagger/OpenAPI configuration
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS for development
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DevPolicy", builder =>
@@ -27,10 +24,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Add the global exception handler as the very first middleware
 app.UseMiddleware<coursework.Middlewares.GlobalExceptionMiddleware>();
 
-// Database migration and role seeding
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -55,6 +50,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
-

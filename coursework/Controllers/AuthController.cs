@@ -38,7 +38,6 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        // Force role to Customer for public registration
         request.Role = UserRoles.Customer;
 
         var response = await _authService.RegisterAsync(request, cancellationToken);
