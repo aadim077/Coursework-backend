@@ -34,7 +34,6 @@ public class SaleInvoiceRepository : RepositoryBase<SaleInvoice>, ISaleInvoiceRe
             .ToListAsync();
     }
 
-    // Auto-generates: INV-20260427-001, INV-20260427-002, etc.
     public async Task<string> GenerateInvoiceNumberAsync()
     {
         var today = DateTime.UtcNow.ToString("yyyyMMdd");

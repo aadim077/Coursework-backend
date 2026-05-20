@@ -131,7 +131,6 @@ public class CustomerController : ControllerBase
         return NoContent();
     }
 
-    // 1. POST customer appointment booking
     [HttpPost("appointments")]
     public async Task<IActionResult> BookAppointment([FromBody] VehicleParts.Application.DTOs.Appointments.AppointmentRequestDto dto)
     {
@@ -146,7 +145,6 @@ public class CustomerController : ControllerBase
         return Ok(result.Data);
     }
 
-    // 2. GET customer appointments
     [HttpGet("appointments")]
     public async Task<IActionResult> GetAppointments()
     {
@@ -158,7 +156,6 @@ public class CustomerController : ControllerBase
         return Ok(result.Data);
     }
 
-    // 3. POST unavailable part request
     [HttpPost("unavailable-parts")]
     public async Task<IActionResult> RequestUnavailablePart([FromBody] VehicleParts.Application.DTOs.UnavailableParts.UnavailablePartRequestDto dto)
     {
@@ -173,7 +170,6 @@ public class CustomerController : ControllerBase
         return Ok(result.Data);
     }
 
-    // 4. GET unavailable part requests
     [HttpGet("unavailable-parts")]
     public async Task<IActionResult> GetUnavailablePartRequests()
     {
@@ -185,7 +181,6 @@ public class CustomerController : ControllerBase
         return Ok(result.Data);
     }
 
-    // 5. POST review submission
     [HttpPost("reviews")]
     public async Task<IActionResult> SubmitReview([FromBody] VehicleParts.Application.DTOs.Reviews.ReviewRequestDto dto)
     {
@@ -200,7 +195,6 @@ public class CustomerController : ControllerBase
         return Ok(result.Data);
     }
 
-    // 6. GET reviews
     [HttpGet("reviews")]
     public async Task<IActionResult> GetReviews()
     {

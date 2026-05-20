@@ -7,7 +7,6 @@ public class ServiceHistory : BaseEntity
     public decimal Cost { get; set; }
     public string Notes { get; set; } = string.Empty;
 
-    // Foreign Key to Vehicle
     public int VehicleId { get; set; }
     public Vehicle Vehicle { get; set; } = null!;
 }

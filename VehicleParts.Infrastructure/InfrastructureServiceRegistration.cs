@@ -20,17 +20,14 @@ public static class InfrastructureServiceRegistration
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // JWT Settings
         var jwtSettings = new JwtSettings();
         configuration.GetSection("JwtSettings").Bind(jwtSettings);
         services.AddSingleton(jwtSettings);
 
-        // Email Settings
         var emailSettings = new EmailSettings();
         configuration.GetSection("EmailSettings").Bind(emailSettings);
         services.AddSingleton(emailSettings);
 
-        // Database - Use SQLite for development if PostgreSQL is unavailable
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
@@ -40,7 +37,6 @@ public static class InfrastructureServiceRegistration
             options.ConfigureWarnings(warnings => warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         });
 
-        // Identity
         services.AddIdentity<AppUser, IdentityRole>(options =>
         {
             options.Password.RequireDigit = true;
@@ -52,7 +48,6 @@ public static class InfrastructureServiceRegistration
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
-        // JWT Authentication
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -73,7 +68,6 @@ public static class InfrastructureServiceRegistration
             };
         });
 
-        // Authorization policies
         services.AddAuthorizationBuilder()
             .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
             .AddPolicy("StaffOnly", policy => policy.RequireRole("Staff"))
@@ -81,7 +75,6 @@ public static class InfrastructureServiceRegistration
             .AddPolicy("StaffOrAdmin", policy => policy.RequireRole("Staff", "Admin"))
             .AddPolicy("AnyRole", policy => policy.RequireRole("Admin", "Staff", "Customer"));
 
-        // Services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IPartService, PartService>();

@@ -8,7 +8,7 @@ namespace coursework.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]   // any authenticated user (Customer, Staff, Admin)
+[Authorize]
 public class SalesOrdersController : ControllerBase
 {
     private readonly ISalesOrderService _salesOrderService;
@@ -18,14 +18,12 @@ public class SalesOrdersController : ControllerBase
         _salesOrderService = salesOrderService;
     }
 
-    // POST: api/salesorders
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateSalesOrderDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        // Extract customer ID securely from the JWT token
         var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(customerId))
             return Unauthorized("Could not identify the customer from the token.");
@@ -37,7 +35,6 @@ public class SalesOrdersController : ControllerBase
         return CreatedAtAction(nameof(GetMyOrders), result.Data);
     }
 
-    // GET: api/salesorders/my-orders
     [HttpGet("my-orders")]
     public async Task<IActionResult> GetMyOrders()
     {

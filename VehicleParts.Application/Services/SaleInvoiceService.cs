@@ -30,7 +30,6 @@ public class SaleInvoiceService : ISaleInvoiceService
         var invoiceItems = new List<SaleInvoiceItem>();
         decimal subTotal = 0;
 
-        // Step 1: Validate stock and build line items
         foreach (var itemDto in dto.Items)
         {
             var part = await _partRepo.GetByIdAsync(itemDto.PartId)
@@ -57,25 +56,20 @@ public class SaleInvoiceService : ISaleInvoiceService
                 LineTotal = lineTotal
             });
 
-            // Step 2: Deduct stock immediately
             part.StockQuantity -= itemDto.Quantity;
             _partRepo.Update(part);
         }
 
-        // Step 3: Apply loyalty discount (Feature 16)
-        // 10% off if the subtotal exceeds Rs. 5000
         decimal discountAmount = subTotal > LoyaltyThreshold
             ? Math.Round(subTotal * LoyaltyDiscountRate, 2)
             : 0;
 
         decimal totalAmount = subTotal - discountAmount;
 
-        // Step 4: Credit payment = unpaid invoice status (feeds into Feature 15)
         var status = dto.PaymentMethod == PaymentMethod.Credit
             ? InvoiceStatus.Credit
             : InvoiceStatus.Paid;
 
-        // Step 5: Build and save invoice
         var invoice = new SaleInvoice
         {
             InvoiceNumber = await _invoiceRepo.GenerateInvoiceNumberAsync(),
@@ -94,7 +88,6 @@ public class SaleInvoiceService : ISaleInvoiceService
         _invoiceRepo.Create(invoice);
         await _invoiceRepo.SaveChangesAsync();
 
-        // Step 6: Low stock check after saving (Feature 15 hook)
         await NotifyLowStockAsync(invoiceItems);
 
         return await GetByIdAsync(invoice.Id);
@@ -113,8 +106,6 @@ public class SaleInvoiceService : ISaleInvoiceService
         var invoices = await _invoiceRepo.GetByCustomerIdAsync(customerId);
         return invoices.Select(MapToDto);
     }
-
-    // ── Helpers ─────────────────────────────────────────────────────────────
 
     private static SaleInvoiceDto MapToDto(SaleInvoice inv) => new()
     {
@@ -152,7 +143,6 @@ public class SaleInvoiceService : ISaleInvoiceService
             var part = await _partRepo.GetByIdAsync(item.PartId);
             if (part != null && part.StockQuantity < LowStockThreshold)
             {
-                // Feature 15 will plug in here — for now log to console
                 Console.WriteLine(
                     $"[LOW STOCK WARNING] '{part.Name}' " +
                     $"has only {part.StockQuantity} unit(s) remaining.");

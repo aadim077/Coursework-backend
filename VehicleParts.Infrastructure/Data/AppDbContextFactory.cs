@@ -21,7 +21,6 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 
         Console.WriteLine($"DEBUG - Connection string: {connectionString}");
 
-        // Hardcoded fallback in case config still can't be read
         if (string.IsNullOrWhiteSpace(connectionString))
         {
             connectionString = "Host=localhost;Port=5432;Database=vehicleparts;Username=postgres;Password=test123";

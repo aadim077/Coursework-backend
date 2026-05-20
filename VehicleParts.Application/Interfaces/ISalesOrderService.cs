@@ -9,9 +9,6 @@ namespace VehicleParts.Application.Interfaces;
 
 public interface ISalesOrderService
 {
-    /// <summary>
-    /// customerId comes from the JWT — never from the request body.
-    /// </summary>
     Task<Result<SalesOrderResponseDto>> CreateAsync(CreateSalesOrderDto dto, string customerId);
     Task<Result<IEnumerable<SalesOrderResponseDto>>> GetOrdersByCustomerAsync(string customerId);
 }

@@ -15,12 +15,11 @@ public class SaleInvoiceItem : BaseEntity
     public int Quantity { get; set; }
 
     [Column(TypeName = "decimal(18,2)")]
-    public decimal UnitPrice { get; set; }    // Captured at time of sale
+    public decimal UnitPrice { get; set; }
 
     [Column(TypeName = "decimal(18,2)")]
-    public decimal LineTotal { get; set; }    // UnitPrice * Quantity
+    public decimal LineTotal { get; set; }
 
-    // Navigation
     [ForeignKey("SaleInvoiceId")]
     public SaleInvoice? SaleInvoice { get; set; }
 

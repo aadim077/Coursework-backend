@@ -46,20 +46,17 @@ public class AppDbContext : IdentityDbContext<AppUser>
             entity.Property(o => o.FinalAmount)
                   .HasColumnType("decimal(18,2)");
 
-            // Many SalesOrders → one AppUser (Customer)
             entity.HasOne(o => o.Customer)
                   .WithMany()
                   .HasForeignKey(o => o.CustomerId)
                   .OnDelete(DeleteBehavior.Restrict);
 
-            // One SalesOrder → many SalesOrderItems
             entity.HasMany(o => o.Items)
                   .WithOne(i => i.SalesOrder)
                   .HasForeignKey(i => i.SalesOrderId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // ── SalesOrderItem ─
         builder.Entity<SalesOrderItem>(entity =>
         {
             entity.HasKey(i => i.Id);
@@ -70,7 +67,6 @@ public class AppDbContext : IdentityDbContext<AppUser>
             entity.Property(i => i.SubTotal)
                   .HasColumnType("decimal(18,2)");
 
-            // Many SalesOrderItems → one Part
             entity.HasOne(i => i.Part)
                   .WithMany()
                   .HasForeignKey(i => i.PartId)

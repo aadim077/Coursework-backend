@@ -36,7 +36,6 @@ public class DailyNotificationJob : BackgroundService
                 _logger.LogError(ex, "An error occurred while processing daily notifications.");
             }
 
-            // For testing, run every 1 minute
             await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
         }
 
@@ -49,7 +48,6 @@ public class DailyNotificationJob : BackgroundService
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
 
-        // 1. Check for Low Stock
         var lowStockParts = await dbContext.Parts
             .Where(p => p.StockQuantity < 10)
             .ToListAsync(stoppingToken);
@@ -68,7 +66,6 @@ public class DailyNotificationJob : BackgroundService
             await emailService.SendEmailAsync(_emailSettings.AdminEmail, subject, body);
         }
 
-        // 2. Check for Unpaid Credits > 1 Month
         var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
         var unpaidInvoices = await dbContext.SalesInvoices
             .Where(i => !i.IsPaid && i.InvoiceDate < oneMonthAgo && !string.IsNullOrEmpty(i.CustomerEmail))

@@ -2,8 +2,6 @@ using VehicleParts.Domain.Enums;
 
 namespace VehicleParts.Application.DTOs;
 
-// ── Input DTOs (what the frontend sends) ───────────────────────────────────
-
 public class CreateSaleInvoiceDto
 {
     public string CustomerId { get; set; } = string.Empty;
@@ -18,8 +16,6 @@ public class CreateSaleItemDto
     public int PartId { get; set; }
     public int Quantity { get; set; }
 }
-
-// ── Output DTOs (what the API returns) ─────────────────────────────────────
 
 public class SaleInvoiceDto
 {

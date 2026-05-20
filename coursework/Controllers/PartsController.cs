@@ -17,7 +17,6 @@ public class PartsController : ControllerBase
         _partService = partService;
     }
 
-    // GET: api/parts
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -28,7 +27,6 @@ public class PartsController : ControllerBase
         return Ok(result.Data);
     }
 
-    // GET: api/parts/5
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -39,7 +37,6 @@ public class PartsController : ControllerBase
         return Ok(result.Data);
     }
 
-    // POST: api/parts
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePartDto dto)
     {
@@ -53,7 +50,6 @@ public class PartsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Data!.Id }, result.Data);
     }
 
-    // PUT: api/parts/5
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdatePartDto dto)
     {
@@ -67,7 +63,6 @@ public class PartsController : ControllerBase
         return Ok(result.Data);
     }
 
-    // DELETE: api/parts/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

@@ -20,7 +20,6 @@ namespace coursework.Controllers
         [HttpPost("seed-data")]
         public async Task<IActionResult> SeedData()
         {
-            // Create a fake vendor first to satisfy the foreign key
             var vendor = new Vendor
             {
                 Name = "Test Vendor",
@@ -32,7 +31,6 @@ namespace coursework.Controllers
             _context.Vendors.Add(vendor);
             await _context.SaveChangesAsync();
 
-            // 1. Seed a Low Stock Part (Stock = 2, Min = 10)
             var part = new Part
             {
                 Name = "Test Spark Plug (Low Stock)",
@@ -45,14 +43,13 @@ namespace coursework.Controllers
             };
             _context.Parts.Add(part);
 
-            // 2. Seed an old Unpaid Invoice (> 1 month old)
             var invoice = new SalesInvoice
             {
                 InvoiceNumber = "INV-TEST-001",
                 CustomerName = "Test Customer",
-                CustomerEmail = "aadimrai884@gmail.com", // Sending to you so you can see it
+                CustomerEmail = "aadimrai884@gmail.com",
                 TotalAmount = 450.00m,
-                InvoiceDate = DateTime.UtcNow.AddMonths(-2), // 2 months ago
+                InvoiceDate = DateTime.UtcNow.AddMonths(-2),
                 IsPaid = false,
                 Items = new List<SalesInvoiceItem>
                 {

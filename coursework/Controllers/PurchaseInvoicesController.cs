@@ -17,7 +17,6 @@ public class PurchaseInvoicesController : ControllerBase
         _invoiceService = invoiceService;
     }
 
-    // GET: api/purchaseinvoices
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -28,7 +27,6 @@ public class PurchaseInvoicesController : ControllerBase
         return Ok(result.Data);
     }
 
-    // GET: api/purchaseinvoices/5
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -39,7 +37,6 @@ public class PurchaseInvoicesController : ControllerBase
         return Ok(result.Data);
     }
 
-    // POST: api/purchaseinvoices
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePurchaseInvoiceDto dto)
     {

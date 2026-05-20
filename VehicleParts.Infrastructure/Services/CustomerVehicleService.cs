@@ -22,7 +22,6 @@ public class CustomerVehicleService : ICustomerVehicleService
     {
         try
         {
-            // Create AppUser with customer role
             var user = new AppUser
             {
                 UserName = dto.Email,
@@ -41,10 +40,8 @@ public class CustomerVehicleService : ICustomerVehicleService
                 return (false, $"Failed to create customer: {errors}", null);
             }
 
-            // Assign Customer role
             await _userManager.AddToRoleAsync(user, "Customer");
 
-            // Create Vehicle
             var vehicle = new Vehicle
             {
                 VehicleNumber = dto.VehicleNumber,

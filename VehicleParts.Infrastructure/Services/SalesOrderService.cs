@@ -23,12 +23,10 @@ public class SalesOrderService : ISalesOrderService
 
     public async Task<Result<SalesOrderResponseDto>> CreateAsync(CreateSalesOrderDto dto, string customerId)
     {
-        // ── Validate customer ─────────────────────────────────────────────────
         var customerExists = await _context.Users.AnyAsync(u => u.Id == customerId);
         if (!customerExists)
             return Result<SalesOrderResponseDto>.Failure("Customer not found.");
 
-        // ── Validate & load parts ─────────────────────────────────────────────
         var partIds = dto.Items.Select(i => i.PartId).Distinct().ToList();
         var parts = await _context.Parts
             .Where(p => partIds.Contains(p.Id))
@@ -37,7 +35,6 @@ public class SalesOrderService : ISalesOrderService
         if (parts.Count != partIds.Count)
             return Result<SalesOrderResponseDto>.Failure("One or more Part IDs are invalid.");
 
-        // ── Stock availability check ──────────────────────────────────────────
         foreach (var itemDto in dto.Items)
         {
             var part = parts.First(p => p.Id == itemDto.PartId);
@@ -55,9 +52,8 @@ public class SalesOrderService : ISalesOrderService
             foreach (var itemDto in dto.Items)
             {
                 var part = parts.First(p => p.Id == itemDto.PartId);
-                var subTotal = itemDto.Quantity * part.Price;   // use current part price
+                var subTotal = itemDto.Quantity * part.Price;
 
-                // Reduce stock
                 part.StockQuantity -= itemDto.Quantity;
 
                 orderItems.Add(new SalesOrderItem
@@ -71,7 +67,6 @@ public class SalesOrderService : ISalesOrderService
                 grossAmount += subTotal;
             }
 
-            // ── Loyalty Program logic ─────────────────────────────────────────
             decimal discountAmount = grossAmount > LoyaltyThreshold
                 ? Math.Round(grossAmount * LoyaltyDiscountRate, 2)
                 : 0m;
@@ -114,7 +109,6 @@ public class SalesOrderService : ISalesOrderService
         return Result<IEnumerable<SalesOrderResponseDto>>.Success(response);
     }
 
-    // ── Mapper ────────────────────────────────────────────────────────────────
     private static SalesOrderResponseDto MapToResponse(SalesOrder order, List<Part> parts) => new()
     {
         Id = order.Id,

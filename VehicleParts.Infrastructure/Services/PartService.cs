@@ -45,7 +45,6 @@ public class PartService : IPartService
 
     public async Task<Result<PartResponseDto>> CreateAsync(CreatePartDto dto)
     {
-        // Validate vendor exists
         var vendorExists = await _context.Vendors.AnyAsync(v => v.Id == dto.VendorId);
         if (!vendorExists)
             return Result<PartResponseDto>.Failure($"Vendor with ID {dto.VendorId} not found.");
@@ -64,7 +63,6 @@ public class PartService : IPartService
         _context.Parts.Add(part);
         await _context.SaveChangesAsync();
 
-        // Reload with vendor for the response
         await _context.Entry(part).Reference(p => p.Vendor).LoadAsync();
 
         return Result<PartResponseDto>.Success(MapToResponse(part));
@@ -83,7 +81,6 @@ public class PartService : IPartService
         if (!vendorExists)
             return Result<PartResponseDto>.Failure($"Vendor with ID {dto.VendorId} not found.");
 
-        // Only update editable fields — StockQuantity is managed by invoices
         part.Name = dto.Name;
         part.Description = dto.Description;
         part.Category = dto.Category;
@@ -110,7 +107,6 @@ public class PartService : IPartService
         return Result<bool>.Success(true);
     }
 
-    // ── Mapper ────────────────────────────────────────────────────────────────
     private static PartResponseDto MapToResponse(Part part) => new()
     {
         Id = part.Id,
